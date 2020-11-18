@@ -2,7 +2,7 @@
 
 - In server run test
 
-## Install And Run
+## Insta
 
 npm:
 
@@ -10,9 +10,11 @@ npm:
 $ npm install --save inline-test
 ```
 
-Run:
+## Run
 
-run at `process.env.e2e` is true:
+`inline-test` run at `process.env.e2e` is true: 
+
+
 
 ```sh
 e2e=1 yarn start

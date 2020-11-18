@@ -103,7 +103,7 @@
                                 return [3 /*break*/, 3];
                             case 3:
                                 if (fn(a, fastEquals.deepEqual) !== true) {
-                                    throw "[TEST FAIL " + index + "] [" + desc + (message ? " -> " + message : "") + "]:  check-error: " + JSON.stringify(a) + "}";
+                                    throw "[TEST FAIL " + index + "] [" + desc + (message ? " -> " + message : "") + "]: " + JSON.stringify(a) + "}";
                                 }
                                 return [2 /*return*/, a];
                         }

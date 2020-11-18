@@ -45,7 +45,7 @@ function inlineTest(
         if (fn(a, deepEqual) !== true) {
           throw `[TEST FAIL ${index}] [${desc}${
             message ? " -> " + message : ""
-          }]:  check-error: ${JSON.stringify(a)}}`;
+          }]: ${JSON.stringify(a)}}`;
         }
         return a;
       },

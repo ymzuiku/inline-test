@@ -26,6 +26,10 @@ process.env.e2e = 1;
 
 ## API
 
+```ts
+inlineTest(index:number, message:string, ({equal, load, cache}) => any);
+```
+
 ### equal
 
 ```ts

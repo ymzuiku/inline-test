@@ -1,54 +1,57 @@
 /* eslint-disable no-console */
 import { deepEqual } from "fast-equals";
 
-type ITryDeepEqual = (a: any, b: any, message?: string) => Promise<any>;
-type ITryGet = (a: any) => Promise<any>;
-
-const load = async (a: any): Promise<any> => {
-  try {
-    a = await Promise.resolve(a);
-  } catch (err) {
-    a = err;
-  }
-  return a;
-};
-
 const e2eIndexs = {} as any;
 let lastAppendTime = Date.now();
 const cache = {};
-interface ITestFn {
-  equal: ITryDeepEqual;
-  load: ITryGet;
-  cache: any;
+
+interface ItReturn {
+  equal: (target: any) => Promise<any>;
+  check: (
+    fn: (equalValue: any, deepEqual: (a: any, b: any) => boolean) => boolean
+  ) => Promise<any>;
 }
+
+type It = (message: string, checkValue: any) => ItReturn;
 
 const inlineTest = (
   index: number,
   desc: string,
-  fn: (options: ITestFn) => void
+  fn: (it: It, cache: any) => void
 ) => {
-  const checkDeepEqual = async (a: any, b: any, message = "") => {
-    try {
-      a = await Promise.resolve(a);
-    } catch (err) {
-      a = err;
-    }
-    try {
-      b = await Promise.resolve(b);
-    } catch (err) {
-      b = err;
-    }
-    const isEqual = deepEqual(a, b);
-    if (!isEqual) {
-      throw `[TEST FAIL ${index}] [${desc}${
-        message ? " -> " + message : ""
-      }]:  ${JSON.stringify(a)} != ${JSON.stringify(b)}`;
-    }
-    return a;
-  };
+  function it(message: string, a: any) {
+    return {
+      equal: async (b: any) => {
+        try {
+          a = await Promise.resolve(a);
+        } catch (err) {
+          a = err;
+        }
+        if (!deepEqual(a, b)) {
+          throw `[TEST FAIL ${index}] [${desc}${
+            message ? " -> " + message : ""
+          }]:  ${JSON.stringify(a)} != ${JSON.stringify(b)}`;
+        }
+        return a;
+      },
+      check: async (fn: Function) => {
+        try {
+          a = await Promise.resolve(a);
+        } catch (err) {
+          a = err;
+        }
+        if (fn(a, deepEqual) !== true) {
+          throw `[TEST FAIL ${index}] [${desc}${
+            message ? " -> " + message : ""
+          }]:  check-error: ${JSON.stringify(a)}}`;
+        }
+        return a;
+      },
+    };
+  }
 
   if (process.env.e2e) {
-    e2eIndexs[index] = [desc, fn, checkDeepEqual];
+    e2eIndexs[index] = [desc, fn, it];
     lastAppendTime = Date.now();
   }
 };
@@ -58,12 +61,8 @@ async function runE2e() {
     (a: any, b: any) => Number(a) - Number(b)
   );
   for (const index of list) {
-    const [desc, fn, checkDeepEqual] = e2eIndexs[index];
-    await fn({
-      equal: checkDeepEqual,
-      load,
-      cache,
-    });
+    const [desc, fn, it] = e2eIndexs[index];
+    await fn(it, cache);
     console.log(`[TEST PASS ${index}] [${desc}]`);
   }
 }

@@ -56,72 +56,67 @@
         }
     }
 
-    var load = function (a) { return __awaiter(void 0, void 0, void 0, function () {
-        var err_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, Promise.resolve(a)];
-                case 1:
-                    a = _a.sent();
-                    return [3 /*break*/, 3];
-                case 2:
-                    err_1 = _a.sent();
-                    a = err_1;
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/, a];
-            }
-        });
-    }); };
     var e2eIndexs = {};
     var lastAppendTime = Date.now();
     var cache = {};
     var inlineTest = function (index, desc, fn) {
-        var checkDeepEqual = function (a, b, message) {
-            if (message === void 0) { message = ""; }
-            return __awaiter(void 0, void 0, void 0, function () {
-                var err_2, err_3, isEqual;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            _a.trys.push([0, 2, , 3]);
-                            return [4 /*yield*/, Promise.resolve(a)];
-                        case 1:
-                            a = _a.sent();
-                            return [3 /*break*/, 3];
-                        case 2:
-                            err_2 = _a.sent();
-                            a = err_2;
-                            return [3 /*break*/, 3];
-                        case 3:
-                            _a.trys.push([3, 5, , 6]);
-                            return [4 /*yield*/, Promise.resolve(b)];
-                        case 4:
-                            b = _a.sent();
-                            return [3 /*break*/, 6];
-                        case 5:
-                            err_3 = _a.sent();
-                            b = err_3;
-                            return [3 /*break*/, 6];
-                        case 6:
-                            isEqual = fastEquals.deepEqual(a, b);
-                            if (!isEqual) {
-                                throw "[TEST FAIL " + index + "] [" + desc + (message ? " -> " + message : "") + "]:  " + JSON.stringify(a) + " != " + JSON.stringify(b);
-                            }
-                            return [2 /*return*/, a];
-                    }
-                });
-            });
-        };
+        function it(message, a) {
+            var _this = this;
+            return {
+                equal: function (b) { return __awaiter(_this, void 0, void 0, function () {
+                    var err_1;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 2, , 3]);
+                                return [4 /*yield*/, Promise.resolve(a)];
+                            case 1:
+                                a = _a.sent();
+                                return [3 /*break*/, 3];
+                            case 2:
+                                err_1 = _a.sent();
+                                a = err_1;
+                                return [3 /*break*/, 3];
+                            case 3:
+                                if (!fastEquals.deepEqual(a, b)) {
+                                    throw "[TEST FAIL " + index + "] [" + desc + (message ? " -> " + message : "") + "]:  " + JSON.stringify(a) + " != " + JSON.stringify(b);
+                                }
+                                return [2 /*return*/, a];
+                        }
+                    });
+                }); },
+                check: function (fn) { return __awaiter(_this, void 0, void 0, function () {
+                    var err_2;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 2, , 3]);
+                                return [4 /*yield*/, Promise.resolve(a)];
+                            case 1:
+                                a = _a.sent();
+                                return [3 /*break*/, 3];
+                            case 2:
+                                err_2 = _a.sent();
+                                a = err_2;
+                                return [3 /*break*/, 3];
+                            case 3:
+                                if (fn(a, fastEquals.deepEqual) !== true) {
+                                    throw "[TEST FAIL " + index + "] [" + desc + (message ? " -> " + message : "") + "]:  check-error: " + JSON.stringify(a) + "}";
+                                }
+                                return [2 /*return*/, a];
+                        }
+                    });
+                }); },
+            };
+        }
         if (process.env.e2e) {
-            e2eIndexs[index] = [desc, fn, checkDeepEqual];
+            e2eIndexs[index] = [desc, fn, it];
             lastAppendTime = Date.now();
         }
     };
     function runE2e() {
         return __awaiter(this, void 0, void 0, function () {
-            var list, _i, list_1, index, _a, desc, fn, checkDeepEqual;
+            var list, _i, list_1, index, _a, desc, fn, it;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -131,12 +126,8 @@
                     case 1:
                         if (!(_i < list_1.length)) return [3 /*break*/, 4];
                         index = list_1[_i];
-                        _a = e2eIndexs[index], desc = _a[0], fn = _a[1], checkDeepEqual = _a[2];
-                        return [4 /*yield*/, fn({
-                                equal: checkDeepEqual,
-                                load: load,
-                                cache: cache,
-                            })];
+                        _a = e2eIndexs[index], desc = _a[0], fn = _a[1], it = _a[2];
+                        return [4 /*yield*/, fn(it, cache)];
                     case 2:
                         _b.sent();
                         console.log("[TEST PASS " + index + "] [" + desc + "]");

@@ -1,12 +1,10 @@
-declare type ITryDeepEqual = (a: any, b: any, message?: string) => Promise<any>;
-declare type ITryGet = (a: any) => Promise<any>;
-interface ITestFn {
-    equal: ITryDeepEqual;
-    load: ITryGet;
-    cache: any;
+interface ItReturn {
+    equal: (target: any) => Promise<any>;
+    check: (fn: (equalValue: any, deepEqual: (a: any, b: any) => boolean) => boolean) => Promise<any>;
 }
+declare type It = (message: string, checkValue: any) => ItReturn;
 declare const inlineTest: {
-    (index: number, desc: string, fn: (options: ITestFn) => void): void;
+    (index: number, desc: string, fn: (it: It, cache: any) => void): void;
     cache: {
         [key: string]: any;
     };

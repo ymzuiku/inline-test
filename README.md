@@ -27,47 +27,32 @@ process.env.e2e = 1;
 ## API
 
 ```ts
-inlineTest(index:number, message:string, ({equal, load, cache}) => any);
+inlineTest(index:number, message:string, (it, cache) => any);
 ```
 
-### equal
+### it
 
 ```ts
-type equal = (a: any, b: any, message?: string) => Promise<a>;
+type it = (message: string, target: any) => { equal: (value) => target, check:(fn:(value:any, deepEqual:Function)=>boolean) };
 ```
-
-eq use try/catch: `Promise.resolve(a)` check deepEqual `b`:
 
 ```ts
 import inlineTest from "inline-test";
 
-inlineTest(2, "Test login", ({equal) => {
+inlineTest(2, "Test login", (it) => {
   const testA = () => {
     throw "dog";
   };
-  equal(a, "dog"); // right
-});
-```
+  it("Test throw", testA()).equal("dog"); // pass
 
-### load
-
-```ts
-type load = (a: any) => Promise<any>;
-```
-
-eq use try/catch: `Promise.resolve(a)` check deepEqual `b`:
-
-```ts
-import inlineTest from "inline-test";
-
-inlineTest(2, "Test login", ({ load }) => {
-  const testA = () => {
-    setTimeout(() => {
-      throw "dog";
-    }, 100);
+  const testB = () => {
+    return new Promise((res) => {
+      setTimeout(() => {
+        res("cat");
+      }, 100);
+    });
   };
-  const res = load(testA);
-  console.log(res); // dog
+  it("Test Promise", testB()).check((v) => v === "cat"); // pass
 });
 ```
 
@@ -82,14 +67,14 @@ cache is global in some inlineTest();
 ```ts
 import inlineTest from "inline-test";
 
-inlineTest(2, "Test login", ({ cache }) => {
+inlineTest(2, "Test login", (it, cache) => {
   console.log(cache); // {}
 });
 ```
 
 ## Example
 
-### 1. Run Test Sign:
+### 1. Run Test Sign get token:
 
 In `src/controllers/sign.js`, add:
 
@@ -97,19 +82,18 @@ In `src/controllers/sign.js`, add:
 import inlineTest from "inline-test";
 
 // first run index:1
-inlineTest(1, "Test Sign", async ({ equal, load, cache }) => {
-  const res = await load(
+inlineTest(1, "Test Sign", async (it, cache) => {
+  const token = await it(
+    "Test fetch"
     fetch("http://localhost:3000/sign/?username=abc&password=123")
-  ); // {code: 200, token:"***"}
-
-  await equal(res.code, 200);
+  ).check(v=>v.code === 200);
 
   // save token in cache
-  cache.token = res.token;
+  cache.token = token;
 });
 ```
 
-### 2. Run Test Login:
+### 2. Run Test Login use token:
 
 In `src/controllers/logn.js`, add:
 
@@ -117,17 +101,13 @@ In `src/controllers/logn.js`, add:
 import inlineTest from "inline-test";
 
 // seconed run index:2
-inlineTest(2, "Test login", ({ equal, cache }) => {
-  equal(
-    fetch("http://localhost:3000/login/?username=abc&password=123"),
+inlineTest(2, "Test login", (it, cache) => {
+  await it(
+    "Test use token"
+    fetch(
+      "http://localhost:3000/login/?username=abc&token=" + cache.token
+    ),
     { code: 200, message: "logined" },
-    "Test with password"
-  );
-
-  equal(
-    fetch("http://localhost:3000/login/?username=abc&token=" + cache.token),
-    { code: 200, message: "logined" },
-    "Test with token"
-  );
+  ).check(v=> v.code === 200 );
 });
 ```

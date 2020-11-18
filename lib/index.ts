@@ -19,7 +19,7 @@ let lastAppendTime = Date.now();
 const inlineTest = (
   index: number,
   desc: string,
-  fn: (eq: ITryDeepEqual, load: ITryGet) => void
+  fn: (eq: ITryDeepEqual, tryGet: ITryGet) => void
 ) => {
   const checkDeepEqual = async (a: any, b: any, message = "") => {
     try {

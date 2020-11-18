@@ -3,10 +3,8 @@ interface ItReturn {
     check: (fn: (equalValue: any, deepEqual: (a: any, b: any) => boolean) => boolean) => Promise<any>;
 }
 declare type It = (message: string, checkValue: any) => ItReturn;
-declare const inlineTest: {
-    (index: number, desc: string, fn: (it: It, cache: any) => void): void;
-    cache: {
-        [key: string]: any;
-    };
-};
+declare function inlineTest(index: number, desc: string, fn: (it: It, cache: any) => void): void;
+declare namespace inlineTest {
+    var start: () => Promise<void>;
+}
 export default inlineTest;

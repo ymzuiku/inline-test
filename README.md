@@ -74,14 +74,9 @@ inlineTest(2, "Test login", (it, cache) => {
 
 ## Example
 
-### 1. Run Test Sign get token:
-
-In `src/controllers/sign.js`, add:
-
 ```js
 import inlineTest from "inline-test";
 
-// first run index:1
 inlineTest(1, "Test Sign", async (it, cache) => {
   const token = await it(
     "Test fetch"
@@ -91,16 +86,7 @@ inlineTest(1, "Test Sign", async (it, cache) => {
   // save token in cache
   cache.token = token;
 });
-```
 
-### 2. Run Test Login use token:
-
-In `src/controllers/logn.js`, add:
-
-```ts
-import inlineTest from "inline-test";
-
-// seconed run index:2
 inlineTest(2, "Test login", (it, cache) => {
   await it(
     "Test use token"
@@ -110,4 +96,6 @@ inlineTest(2, "Test login", (it, cache) => {
     { code: 200, message: "logined" },
   ).check(v=> v.code === 200 );
 });
+
+inlineTest.start();
 ```

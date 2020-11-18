@@ -57,9 +57,11 @@
     }
 
     var e2eIndexs = {};
-    var lastAppendTime = Date.now();
     var cache = {};
-    var inlineTest = function (index, desc, fn) {
+    function inlineTest(index, desc, fn) {
+        if (!process.env.e2e) {
+            return;
+        }
         function it(message, a) {
             var _this = this;
             return {
@@ -109,14 +111,14 @@
                 }); },
             };
         }
-        if (process.env.e2e) {
-            e2eIndexs[index] = [desc, fn, it];
-            lastAppendTime = Date.now();
+        if (!e2eIndexs[index]) {
+            e2eIndexs[index] = [];
         }
-    };
-    function runE2e() {
+        e2eIndexs[index].push([desc, fn, it]);
+    }
+    function start() {
         return __awaiter(this, void 0, void 0, function () {
-            var list, _i, list_1, index, _a, desc, fn, it;
+            var list, _i, list_1, index, fnList, _a, fnList_1, data, desc, fn, it;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -124,42 +126,34 @@
                         _i = 0, list_1 = list;
                         _b.label = 1;
                     case 1:
-                        if (!(_i < list_1.length)) return [3 /*break*/, 4];
+                        if (!(_i < list_1.length)) return [3 /*break*/, 6];
                         index = list_1[_i];
-                        _a = e2eIndexs[index], desc = _a[0], fn = _a[1], it = _a[2];
-                        return [4 /*yield*/, fn(it, cache)];
+                        fnList = e2eIndexs[index];
+                        _a = 0, fnList_1 = fnList;
+                        _b.label = 2;
                     case 2:
+                        if (!(_a < fnList_1.length)) return [3 /*break*/, 5];
+                        data = fnList_1[_a];
+                        desc = data[0], fn = data[1], it = data[2];
+                        return [4 /*yield*/, fn(it, cache)];
+                    case 3:
                         _b.sent();
                         console.log("[TEST PASS " + index + "] [" + desc + "]");
-                        _b.label = 3;
-                    case 3:
+                        _b.label = 4;
+                    case 4:
+                        _a++;
+                        return [3 /*break*/, 2];
+                    case 5:
                         _i++;
                         return [3 /*break*/, 1];
-                    case 4: return [2 /*return*/];
+                    case 6:
+                        e2eIndexs = {};
+                        return [2 /*return*/];
                 }
             });
         });
     }
-    setTimeout(function () {
-        if (process.env.e2e) {
-            global.e2e = {};
-            var timeOutRun_1 = function () {
-                setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () {
-                    return __generator(this, function (_a) {
-                        if (Date.now() - lastAppendTime > 100) {
-                            runE2e();
-                        }
-                        else {
-                            timeOutRun_1();
-                        }
-                        return [2 /*return*/];
-                    });
-                }); }, 100);
-            };
-            timeOutRun_1();
-        }
-    }, 100);
-    inlineTest.cache = {};
+    inlineTest.start = start;
 
     return inlineTest;
 

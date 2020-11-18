@@ -1,6 +1,7 @@
-declare type ICheckDeepEqual = (a: any, b: any, message?: string) => Promise<any>;
+declare type ITryDeepEqual = (a: any, b: any, message?: string) => Promise<any>;
+declare type ITryGet = (a: any) => Promise<any>;
 declare const inlineTest: {
-    (index: number, desc: string, fn: (eq: ICheckDeepEqual) => void): void;
+    (index: number, desc: string, fn: (eq: ITryDeepEqual, load: ITryGet) => void): void;
     cache: {
         [key: string]: any;
     };

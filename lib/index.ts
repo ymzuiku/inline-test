@@ -1,7 +1,17 @@
 /* eslint-disable no-console */
 import { deepEqual } from "fast-equals";
 
-type ICheckDeepEqual = (a: any, b: any, message?: string) => Promise<any>;
+type ITryDeepEqual = (a: any, b: any, message?: string) => Promise<any>;
+type ITryGet = (a: any) => Promise<any>;
+
+const tryGet = async (a: any): Promise<any> => {
+  try {
+    a = await Promise.resolve(a);
+  } catch (err) {
+    a = err;
+  }
+  return a;
+};
 
 const e2eIndexs = {} as any;
 let lastAppendTime = Date.now();
@@ -9,7 +19,7 @@ let lastAppendTime = Date.now();
 const inlineTest = (
   index: number,
   desc: string,
-  fn: (eq: ICheckDeepEqual) => void
+  fn: (eq: ITryDeepEqual, load: ITryGet) => void
 ) => {
   const checkDeepEqual = async (a: any, b: any, message = "") => {
     try {
@@ -43,7 +53,7 @@ async function runE2e() {
   );
   for (const index of list) {
     const [desc, fn, checkDeepEqual] = e2eIndexs[index];
-    await fn(checkDeepEqual);
+    await fn(checkDeepEqual, tryGet);
     console.log(`[TEST PASS ${index}] [${desc}]`);
   }
 }

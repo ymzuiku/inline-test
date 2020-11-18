@@ -56,13 +56,31 @@
         }
     }
 
+    var tryGet = function (a) { return __awaiter(void 0, void 0, void 0, function () {
+        var err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, Promise.resolve(a)];
+                case 1:
+                    a = _a.sent();
+                    return [3 /*break*/, 3];
+                case 2:
+                    err_1 = _a.sent();
+                    a = err_1;
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/, a];
+            }
+        });
+    }); };
     var e2eIndexs = {};
     var lastAppendTime = Date.now();
     var inlineTest = function (index, desc, fn) {
         var checkDeepEqual = function (a, b, message) {
             if (message === void 0) { message = ""; }
             return __awaiter(void 0, void 0, void 0, function () {
-                var err_1, err_2, isEqual;
+                var err_2, err_3, isEqual;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -72,8 +90,8 @@
                             a = _a.sent();
                             return [3 /*break*/, 3];
                         case 2:
-                            err_1 = _a.sent();
-                            a = err_1;
+                            err_2 = _a.sent();
+                            a = err_2;
                             return [3 /*break*/, 3];
                         case 3:
                             _a.trys.push([3, 5, , 6]);
@@ -82,8 +100,8 @@
                             b = _a.sent();
                             return [3 /*break*/, 6];
                         case 5:
-                            err_2 = _a.sent();
-                            b = err_2;
+                            err_3 = _a.sent();
+                            b = err_3;
                             return [3 /*break*/, 6];
                         case 6:
                             isEqual = fastEquals.deepEqual(a, b);
@@ -113,7 +131,7 @@
                         if (!(_i < list_1.length)) return [3 /*break*/, 4];
                         index = list_1[_i];
                         _a = e2eIndexs[index], desc = _a[0], fn = _a[1], checkDeepEqual = _a[2];
-                        return [4 /*yield*/, fn(checkDeepEqual)];
+                        return [4 /*yield*/, fn(checkDeepEqual, tryGet)];
                     case 2:
                         _b.sent();
                         console.log("[TEST PASS " + index + "] [" + desc + "]");

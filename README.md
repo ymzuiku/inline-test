@@ -12,9 +12,7 @@ $ npm install --save inline-test
 
 ## Run
 
-`inline-test` run at `process.env.e2e` is true: 
-
-
+`inline-test` run at `process.env.e2e` is true:
 
 ```sh
 e2e=1 yarn start
@@ -92,5 +90,27 @@ inlineTest(2, "Test login", (eq) => {
     throw "dog";
   };
   eq(a, "dog"); // right
+});
+```
+
+## tryGet
+
+```ts
+type tryGet = (a: any) => Promise<any>;
+```
+
+eq use try/catch: `Promise.resolve(a)` check deepEqual `b`:
+
+```ts
+import inlineTest from "inline-test";
+
+inlineTest(2, "Test login", (eq, tryGet) => {
+  const testA = () => {
+    setTimeout(() => {
+      throw "dog";
+    }, 100);
+  };
+  const res = tryGet(testA); // dog
+  eq(res, "dog") // right
 });
 ```

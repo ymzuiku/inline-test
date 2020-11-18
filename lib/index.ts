@@ -4,7 +4,7 @@ import { deepEqual } from "fast-equals";
 type ITryDeepEqual = (a: any, b: any, message?: string) => Promise<any>;
 type ITryGet = (a: any) => Promise<any>;
 
-const tryGet = async (a: any): Promise<any> => {
+const load = async (a: any): Promise<any> => {
   try {
     a = await Promise.resolve(a);
   } catch (err) {
@@ -15,11 +15,17 @@ const tryGet = async (a: any): Promise<any> => {
 
 const e2eIndexs = {} as any;
 let lastAppendTime = Date.now();
+const cache = {};
+interface ITestFn {
+  equal: ITryDeepEqual;
+  load: ITryGet;
+  cache: any;
+}
 
 const inlineTest = (
   index: number,
   desc: string,
-  fn: (eq: ITryDeepEqual, tryGet: ITryGet) => void
+  fn: (options: ITestFn) => void
 ) => {
   const checkDeepEqual = async (a: any, b: any, message = "") => {
     try {
@@ -53,7 +59,11 @@ async function runE2e() {
   );
   for (const index of list) {
     const [desc, fn, checkDeepEqual] = e2eIndexs[index];
-    await fn(checkDeepEqual, tryGet);
+    await fn({
+      equal: checkDeepEqual,
+      load,
+      cache,
+    });
     console.log(`[TEST PASS ${index}] [${desc}]`);
   }
 }

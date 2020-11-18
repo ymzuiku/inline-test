@@ -2,7 +2,7 @@
 
 - In server run test
 
-## Insta
+## Install
 
 npm:
 
@@ -10,7 +10,7 @@ npm:
 $ npm install --save inline-test
 ```
 
-## Run
+## Env
 
 `inline-test` run at `process.env.e2e` is true:
 
@@ -24,7 +24,66 @@ or in index.js, set `process.env.e2e`:
 process.env.e2e = 1;
 ```
 
-## inlineTest
+## API
+
+### equal
+
+```ts
+type equal = (a: any, b: any, message?: string) => Promise<a>;
+```
+
+eq use try/catch: `Promise.resolve(a)` check deepEqual `b`:
+
+```ts
+import inlineTest from "inline-test";
+
+inlineTest(2, "Test login", ({equal) => {
+  const testA = () => {
+    throw "dog";
+  };
+  equal(a, "dog"); // right
+});
+```
+
+### load
+
+```ts
+type load = (a: any) => Promise<any>;
+```
+
+eq use try/catch: `Promise.resolve(a)` check deepEqual `b`:
+
+```ts
+import inlineTest from "inline-test";
+
+inlineTest(2, "Test login", ({ load }) => {
+  const testA = () => {
+    setTimeout(() => {
+      throw "dog";
+    }, 100);
+  };
+  const res = load(testA);
+  console.log(res); // dog
+});
+```
+
+### cache
+
+```ts
+type cache = { [key: string]: any };
+```
+
+cache is global in some inlineTest();
+
+```ts
+import inlineTest from "inline-test";
+
+inlineTest(2, "Test login", ({ cache }) => {
+  console.log(cache); // {}
+});
+```
+
+## Example
 
 ### 1. Run Test Sign:
 
@@ -34,17 +93,15 @@ In `src/controllers/sign.js`, add:
 import inlineTest from "inline-test";
 
 // first run index:1
-inlineTest(1, "Test Sign", async (eq) => {
-  const signData = await eq(
-    fetch("http://localhost:3000/sign/?username=abc&password=123"),
-    {
-      code: 200,
-      message: "sign done",
-    }
-  );
+inlineTest(1, "Test Sign", async ({ equal, load, cache }) => {
+  const res = await load(
+    fetch("http://localhost:3000/sign/?username=abc&password=123")
+  ); // {code: 200, token:"***"}
 
-  // inlineTest.cache is {};
-  inlineTest.cache.signData = signData;
+  await equal(res.code, 200);
+
+  // save token in cache
+  cache.token = res.token;
 });
 ```
 
@@ -56,61 +113,17 @@ In `src/controllers/logn.js`, add:
 import inlineTest from "inline-test";
 
 // seconed run index:2
-inlineTest(2, "Test login", (eq) => {
-  eq(
+inlineTest(2, "Test login", ({ equal, cache }) => {
+  equal(
     fetch("http://localhost:3000/login/?username=abc&password=123"),
     { code: 200, message: "logined" },
     "Test with password"
   );
 
-  eq(
-    fetch(
-      "http://localhost:3000/login/?username=abc&token=" +
-        inlineTest.cache.signData.token
-    ),
+  equal(
+    fetch("http://localhost:3000/login/?username=abc&token=" + cache.token),
     { code: 200, message: "logined" },
     "Test with token"
   );
-});
-```
-
-## eq
-
-```ts
-type eq = (a: any, b: any, message?: string) => Promise<a>;
-```
-
-eq use try/catch: `Promise.resolve(a)` check deepEqual `b`:
-
-```ts
-import inlineTest from "inline-test";
-
-inlineTest(2, "Test login", (eq) => {
-  const testA = () => {
-    throw "dog";
-  };
-  eq(a, "dog"); // right
-});
-```
-
-## tryGet
-
-```ts
-type tryGet = (a: any) => Promise<any>;
-```
-
-eq use try/catch: `Promise.resolve(a)` check deepEqual `b`:
-
-```ts
-import inlineTest from "inline-test";
-
-inlineTest(2, "Test login", (eq, tryGet) => {
-  const testA = () => {
-    setTimeout(() => {
-      throw "dog";
-    }, 100);
-  };
-  const res = tryGet(testA); // dog
-  eq(res, "dog") // right
 });
 ```

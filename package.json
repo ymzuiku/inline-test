@@ -1,6 +1,6 @@
 {
   "name": "inline-test",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "main": "umd/index.js",
   "types": "umd/index.d.ts",
   "private": false,

@@ -24,7 +24,7 @@ const inlineTest = (
     }
     const isEqual = deepEqual(a, b);
     if (!isEqual) {
-      throw `[E2E FAIL ${index}] [${desc}${
+      throw `[TEST FAIL ${index}] [${desc}${
         message ? " -> " + message : ""
       }]:  ${JSON.stringify(a)} != ${JSON.stringify(b)}`;
     }
@@ -44,7 +44,7 @@ async function runE2e() {
   for (const index of list) {
     const [desc, fn, checkDeepEqual] = e2eIndexs[index];
     await fn(checkDeepEqual);
-    console.log(`[E2e PASS ${index}] [${desc}]`);
+    console.log(`[TEST PASS ${index}] [${desc}]`);
   }
 }
 

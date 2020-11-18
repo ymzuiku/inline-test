@@ -37,7 +37,7 @@ const watchOptions = [
     output: {
       file: "./umd/index.js",
       format: "umd",
-      name: "vanillaDevice",
+      name: "inlineTest",
       sourcemap: true,
       globals: {
         "fast-equals": "fast-equals",

@@ -1,7 +1,7 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('fast-equals')) :
     typeof define === 'function' && define.amd ? define(['fast-equals'], factory) :
-    (global = global || self, global.vanillaDevice = factory(global['fast-equals']));
+    (global = global || self, global.inlineTest = factory(global['fast-equals']));
 }(this, (function (fastEquals) { 'use strict';
 
     /*! *****************************************************************************
@@ -88,7 +88,7 @@
                         case 6:
                             isEqual = fastEquals.deepEqual(a, b);
                             if (!isEqual) {
-                                throw "[E2E FAIL " + index + "] [" + desc + (message ? " -> " + message : "") + "]:  " + JSON.stringify(a) + " != " + JSON.stringify(b);
+                                throw "[TEST FAIL " + index + "] [" + desc + (message ? " -> " + message : "") + "]:  " + JSON.stringify(a) + " != " + JSON.stringify(b);
                             }
                             return [2 /*return*/, a];
                     }
@@ -116,7 +116,7 @@
                         return [4 /*yield*/, fn(checkDeepEqual)];
                     case 2:
                         _b.sent();
-                        console.log("[E2e PASS " + index + "] [" + desc + "]");
+                        console.log("[TEST PASS " + index + "] [" + desc + "]");
                         _b.label = 3;
                     case 3:
                         _i++;
